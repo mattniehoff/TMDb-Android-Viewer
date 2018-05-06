@@ -67,3 +67,5 @@ fastlane/test_output
 fastlane/readme.md
 
 \.idea/
+
+app/src/main/java/com/mattniehoff/tmdbandroidviewer/ApiKeys\.java
