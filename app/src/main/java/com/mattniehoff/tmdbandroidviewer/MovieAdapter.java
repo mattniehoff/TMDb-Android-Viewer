@@ -35,11 +35,11 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.placeholderTextView.setText(data[position]);
+        holder.placeholderTextView.setText(String.valueOf(position));
     }
 
     @Override
     public int getItemCount() {
-        return data.length;
+        return 150;
     }
 }
