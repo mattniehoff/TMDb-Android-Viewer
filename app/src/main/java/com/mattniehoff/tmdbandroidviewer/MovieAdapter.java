@@ -7,8 +7,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.mattniehoff.tmdbandroidviewer.model.Result;
+
+import java.util.List;
+
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> {
-    private String[] data;
+    private List<Result> data;
     private int numberOfDataItems;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -19,7 +23,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         }
     }
 
-    public MovieAdapter(String [] data){
+    public MovieAdapter(List<Result> data){
         this.data = data;
 
         notifyDataSetChanged();
@@ -35,11 +39,17 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.placeholderTextView.setText(String.valueOf(position));
+        Result result = data.get(position);
+        holder.placeholderTextView.setText(result.getTitle());
     }
 
     @Override
     public int getItemCount() {
-        return 150;
+        return data.size();
+    }
+
+    public void updateData(List<Result> data) {
+        this.data = data;
+        notifyDataSetChanged();
     }
 }
