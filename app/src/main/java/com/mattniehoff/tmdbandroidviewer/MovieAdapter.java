@@ -18,19 +18,34 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
     private List<Result> data;
     private int numberOfDataItems;
     private Context context;
+    private ListItemClickListener clickListener;
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public interface ListItemClickListener {
+        void onListItemClick(Result movieResult);
+    }
+
+    class ViewHolder extends RecyclerView.ViewHolder
+            implements View.OnClickListener {
         public ImageView posterImageView;
         public ViewHolder (View v) {
             super (v);
             posterImageView = (ImageView) v.findViewById(R.id.movie_poster_iv);
+            v.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            int clickedPosition = getAdapterPosition();
+            Result clickedResult = data.get(clickedPosition);
+            clickListener.onListItemClick(clickedResult);
         }
     }
 
-    public MovieAdapter(Context context, List<Result> data){
+    public MovieAdapter(Context context, List<Result> data, ListItemClickListener listener){
         // Context needed for Picasso
         this.context = context;
         this.data = data;
+        this.clickListener = listener;
 
         notifyDataSetChanged();
     }
