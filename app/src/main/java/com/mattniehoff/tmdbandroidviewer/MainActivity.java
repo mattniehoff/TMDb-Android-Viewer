@@ -1,5 +1,6 @@
 package com.mattniehoff.tmdbandroidviewer;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -21,7 +22,8 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity
+    implements MovieAdapter.ListItemClickListener {
 
     private RecyclerView recyclerView;
     private MovieAdapter adapter;
@@ -41,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
         layoutManager = new GridLayoutManager(this, 2);
         recyclerView.setLayoutManager(layoutManager);
 
-        adapter = new MovieAdapter(getApplicationContext(), new ArrayList<Result>(0));
+        adapter = new MovieAdapter(getApplicationContext(), new ArrayList<Result>(0), this);
         recyclerView.setAdapter(adapter);
 
         populateData();
@@ -75,5 +77,15 @@ public class MainActivity extends AppCompatActivity {
 
     private void showFailureMessage(){
         Toast.makeText(this, "Failed", Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onListItemClick(Result movieResult) {
+        String toastMessage = "Movie title: " + movieResult.getTitle() + " clicked.";
+        Toast.makeText(this, toastMessage, Toast.LENGTH_LONG).show();
+
+        Intent intent = new Intent(this, MovieActivity.class);
+        intent.putExtra(MovieActivity.RESULT_EXTRA, movieResult);
+        startActivity(intent);
     }
 }
