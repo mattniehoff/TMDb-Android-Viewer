@@ -47,13 +47,6 @@ public class MainActivity extends AppCompatActivity {
         populateData();
     }
 
-//    private void populateMovieGrid() {
-//        testData = new String[] {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"};
-//
-//        adapter = new MovieAdapter(testData);
-//        recyclerView.setAdapter(adapter);
-//    }
-
     private void populateData() {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(MovieDatabaseNetworkUtils.BASE_URL)
