@@ -1,29 +1,35 @@
 package com.mattniehoff.tmdbandroidviewer;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.mattniehoff.tmdbandroidviewer.model.Result;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> {
     private List<Result> data;
     private int numberOfDataItems;
+    private Context context;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView placeholderTextView;
+        public ImageView posterImageView;
         public ViewHolder (View v) {
             super (v);
-            placeholderTextView = (TextView) v.findViewById(R.id.placeholder_text_view);
+            posterImageView = (ImageView) v.findViewById(R.id.movie_poster_iv);
         }
     }
 
-    public MovieAdapter(List<Result> data){
+    public MovieAdapter(Context context, List<Result> data){
+        // Context needed for Picasso
+        this.context = context;
         this.data = data;
 
         notifyDataSetChanged();
@@ -40,7 +46,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Result result = data.get(position);
-        holder.placeholderTextView.setText(result.getTitle());
+        Picasso.with(context).load(result.getMoviePosterUrl()).into(holder.posterImageView);
     }
 
     @Override
