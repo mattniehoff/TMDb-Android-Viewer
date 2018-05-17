@@ -1,5 +1,6 @@
 package com.mattniehoff.tmdbandroidviewer;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -82,5 +83,9 @@ public class MainActivity extends AppCompatActivity
     public void onListItemClick(Result movieResult) {
         String toastMessage = "Movie title: " + movieResult.getTitle() + " clicked.";
         Toast.makeText(this, toastMessage, Toast.LENGTH_LONG).show();
+
+        Intent intent = new Intent(this, MovieActivity.class);
+        intent.putExtra(MovieActivity.RESULT_EXTRA, movieResult);
+        startActivity(intent);
     }
 }
