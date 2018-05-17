@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
         layoutManager = new GridLayoutManager(this, 2);
         recyclerView.setLayoutManager(layoutManager);
 
-        adapter = new MovieAdapter(new ArrayList<Result>(0));
+        adapter = new MovieAdapter(getApplicationContext(), new ArrayList<Result>(0));
         recyclerView.setAdapter(adapter);
 
         populateData();

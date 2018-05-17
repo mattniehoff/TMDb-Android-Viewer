@@ -8,6 +8,8 @@ import java.util.List;
 // Class generated with help from http://www.jsonschema2pojo.org/
 public class Result {
 
+    private static final String POSTER_URL_BASE = "http://image.tmdb.org/t/p/w185//";
+
     @SerializedName("vote_count")
     @Expose
     private Integer voteCount;
@@ -162,4 +164,6 @@ public class Result {
     public void setReleaseDate(String releaseDate) {
         this.releaseDate = releaseDate;
     }
+
+    public String getMoviePosterUrl() { return POSTER_URL_BASE + posterPath; }
 }
