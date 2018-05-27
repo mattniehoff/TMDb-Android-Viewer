@@ -14,5 +14,5 @@ public interface MoviesDatabaseClient {
     Call<TheMovieDatabaseResponse> moviesByPopularity(@Query("api_key") String apiKey);
 
     @GET("movie/top_rated")
-    Call<TheMovieDatabaseResponse> moviesByRAting(@Query("api_key") String apiKey);
+    Call<TheMovieDatabaseResponse> moviesByRating(@Query("api_key") String apiKey);
 }

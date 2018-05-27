@@ -8,11 +8,13 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.mattniehoff.tmdbandroidviewer.model.Result;
 import com.mattniehoff.tmdbandroidviewer.model.TheMovieDatabaseResponse;
 import com.mattniehoff.tmdbandroidviewer.network.MovieDatabaseNetworkUtils;
+import com.mattniehoff.tmdbandroidviewer.network.MovieDatabaseQueryType;
 import com.mattniehoff.tmdbandroidviewer.network.MoviesDatabaseClient;
 
 import java.util.ArrayList;
@@ -31,11 +33,14 @@ public class MainActivity extends AppCompatActivity
     private MovieAdapter adapter;
     private RecyclerView.LayoutManager layoutManager;
     private String[] testData;
+    private MovieDatabaseQueryType movieDatabaseQueryType;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        movieDatabaseQueryType = MovieDatabaseQueryType.MOVIES_BY_POPULARITY;
 
         recyclerView = (RecyclerView) findViewById(R.id.movies_recycler_view);
 
@@ -58,6 +63,27 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.change_sort_menu:
+                changeSort();
+                populateData();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void changeSort() {
+        if (movieDatabaseQueryType == MovieDatabaseQueryType.MOVIES_BY_POPULARITY) {
+            movieDatabaseQueryType = MovieDatabaseQueryType.MOVIES_BY_RATING;
+        } else {
+            movieDatabaseQueryType = MovieDatabaseQueryType.MOVIES_BY_POPULARITY;
+        }
+    }
+
     private void populateData() {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(MovieDatabaseNetworkUtils.BASE_URL)
@@ -65,7 +91,20 @@ public class MainActivity extends AppCompatActivity
                 .build();
 
         MoviesDatabaseClient client = retrofit.create(MoviesDatabaseClient.class);
-        Call<TheMovieDatabaseResponse> call = client.moviesByPopularity(ApiKeys.TmdbApiKey);
+        Call<TheMovieDatabaseResponse> call;
+
+        switch (movieDatabaseQueryType) {
+
+            case MOVIES_BY_POPULARITY:
+                call = client.moviesByPopularity(ApiKeys.TmdbApiKey);
+                break;
+            case MOVIES_BY_RATING:
+                call = client.moviesByRating(ApiKeys.TmdbApiKey);
+                break;
+            default:
+                Toast.makeText(this, "Invalid movie database query type passed: " + movieDatabaseQueryType, Toast.LENGTH_LONG);
+                return;
+        }
 
         call.enqueue(new Callback<TheMovieDatabaseResponse>() {
             @Override
