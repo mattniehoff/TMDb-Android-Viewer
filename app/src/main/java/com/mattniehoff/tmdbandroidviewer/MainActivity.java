@@ -77,11 +77,16 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void changeSort() {
+        String toastMessage = "Sorted by ";
         if (movieDatabaseQueryType == MovieDatabaseQueryType.MOVIES_BY_POPULARITY) {
             movieDatabaseQueryType = MovieDatabaseQueryType.MOVIES_BY_RATING;
+            toastMessage += "Rating";
         } else {
             movieDatabaseQueryType = MovieDatabaseQueryType.MOVIES_BY_POPULARITY;
+            toastMessage += "Popularity";
         }
+
+        Toast.makeText(this, toastMessage, Toast.LENGTH_LONG).show();
     }
 
     private void populateData() {
@@ -129,9 +134,6 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onListItemClick(Result movieResult) {
-        String toastMessage = "Movie title: " + movieResult.getTitle() + " clicked.";
-        Toast.makeText(this, toastMessage, Toast.LENGTH_LONG).show();
-
         Intent intent = new Intent(this, MovieActivity.class);
         intent.putExtra(MovieActivity.RESULT_EXTRA, movieResult);
         startActivity(intent);
