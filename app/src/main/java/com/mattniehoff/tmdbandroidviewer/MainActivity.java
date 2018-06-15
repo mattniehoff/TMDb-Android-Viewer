@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -18,7 +17,6 @@ import com.mattniehoff.tmdbandroidviewer.network.MovieDatabaseQueryType;
 import com.mattniehoff.tmdbandroidviewer.network.MoviesDatabaseClient;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -77,13 +75,13 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void changeSort() {
-        String toastMessage = "Sorted by ";
+        String toastMessage = getString(R.string.change_sort_prefix);
         if (movieDatabaseQueryType == MovieDatabaseQueryType.MOVIES_BY_POPULARITY) {
             movieDatabaseQueryType = MovieDatabaseQueryType.MOVIES_BY_RATING;
-            toastMessage += "Rating";
+            toastMessage += getString(R.string.rating);
         } else {
             movieDatabaseQueryType = MovieDatabaseQueryType.MOVIES_BY_POPULARITY;
-            toastMessage += "Popularity";
+            toastMessage += getString(R.string.popularity);
         }
 
         Toast.makeText(this, toastMessage, Toast.LENGTH_LONG).show();
@@ -107,7 +105,7 @@ public class MainActivity extends AppCompatActivity
                 call = client.moviesByRating(ApiKeys.TmdbApiKey);
                 break;
             default:
-                Toast.makeText(this, "Invalid movie database query type passed: " + movieDatabaseQueryType, Toast.LENGTH_LONG);
+                Toast.makeText(this, getString(R.string.error_invalid_movie_database_query_type) + movieDatabaseQueryType, Toast.LENGTH_LONG);
                 return;
         }
 
@@ -117,7 +115,7 @@ public class MainActivity extends AppCompatActivity
                 if (response.isSuccessful()) {
                     adapter.updateData(response.body().getResults());
                 } else {
-                    Toast.makeText(getApplicationContext(), "Response code: " + response.code(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), getString(R.string.movie_database_response_code_message_prefix) + response.code(), Toast.LENGTH_LONG).show();
                 }
             }
 
@@ -129,7 +127,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void showFailureMessage() {
-        Toast.makeText(this, "Failed", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, R.string.failure_message, Toast.LENGTH_LONG).show();
     }
 
     @Override
