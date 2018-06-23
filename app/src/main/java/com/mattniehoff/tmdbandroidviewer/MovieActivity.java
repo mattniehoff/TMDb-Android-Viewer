@@ -32,7 +32,7 @@ public class MovieActivity extends AppCompatActivity {
         Bundle data = getIntent().getExtras();
         Result movieResult = data.getParcelable(RESULT_EXTRA);
 
-        Picasso.with(this).load(movieResult.getMoviePosterUrl()).into(moviePosterImageView);
+        Picasso.get().load(movieResult.getMoviePosterUrl()).into(moviePosterImageView);
         titleTextView.setText(movieResult.getTitle());
         releaseDateTextView.setText(movieResult.getReleaseDate());
         voteAverageTextView.setText(Double.toString(movieResult.getVoteAverage()));
