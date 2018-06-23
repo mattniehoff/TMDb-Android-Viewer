@@ -33,6 +33,8 @@ public class MainActivity extends AppCompatActivity
     private String[] testData;
     private MovieDatabaseQueryType movieDatabaseQueryType;
 
+    private static final String TMDB_API_KEY = BuildConfig.TMDB_API_KEY;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -99,10 +101,10 @@ public class MainActivity extends AppCompatActivity
         switch (movieDatabaseQueryType) {
 
             case MOVIES_BY_POPULARITY:
-                call = client.moviesByPopularity(ApiKeys.TmdbApiKey);
+                call = client.moviesByPopularity(TMDB_API_KEY);
                 break;
             case MOVIES_BY_RATING:
-                call = client.moviesByRating(ApiKeys.TmdbApiKey);
+                call = client.moviesByRating(TMDB_API_KEY);
                 break;
             default:
                 Toast.makeText(this, getString(R.string.error_invalid_movie_database_query_type) + movieDatabaseQueryType, Toast.LENGTH_LONG);

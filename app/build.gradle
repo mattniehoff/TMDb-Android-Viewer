@@ -9,6 +9,10 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        // API Key approach per: https://richardroseblog.wordpress.com/2016/05/29/hiding-secret-api-keys-from-git/
+        // Ensure you have a valid themoviedb.org
+        buildConfigField("String", "TMDB_API_KEY", TMDB_API_KEY)
     }
     buildTypes {
         release {
