@@ -13,7 +13,7 @@ import android.widget.Toast;
 import com.mattniehoff.tmdbandroidviewer.BuildConfig;
 import com.mattniehoff.tmdbandroidviewer.R;
 import com.mattniehoff.tmdbandroidviewer.adapters.MovieAdapter;
-import com.mattniehoff.tmdbandroidviewer.model.Result;
+import com.mattniehoff.tmdbandroidviewer.model.TheMovieDatabaseMovieResult;
 import com.mattniehoff.tmdbandroidviewer.model.TheMovieDatabaseResponse;
 import com.mattniehoff.tmdbandroidviewer.network.MovieDatabaseNetworkUtils;
 import com.mattniehoff.tmdbandroidviewer.network.MovieDatabaseQueryType;
@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity
         layoutManager = new GridLayoutManager(this, 2);
         recyclerView.setLayoutManager(layoutManager);
 
-        adapter = new MovieAdapter(getApplicationContext(), new ArrayList<Result>(0), this);
+        adapter = new MovieAdapter(getApplicationContext(), new ArrayList<TheMovieDatabaseMovieResult>(0), this);
         recyclerView.setAdapter(adapter);
 
         populateData();
@@ -118,7 +118,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onResponse(Call<TheMovieDatabaseResponse> call, Response<TheMovieDatabaseResponse> response) {
                 if (response.isSuccessful()) {
-                    adapter.updateData(response.body().getResults());
+                    adapter.updateData(response.body().getTheMovieDatabaseMovieResults());
                 } else {
                     Toast.makeText(getApplicationContext(), getString(R.string.movie_database_response_code_message_prefix) + response.code(), Toast.LENGTH_LONG).show();
                 }
@@ -136,9 +136,9 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onListItemClick(Result movieResult) {
+    public void onListItemClick(TheMovieDatabaseMovieResult movieTheMovieDatabaseMovieResult) {
         Intent intent = new Intent(this, MovieActivity.class);
-        intent.putExtra(MovieActivity.RESULT_EXTRA, movieResult);
+        intent.putExtra(MovieActivity.RESULT_EXTRA, movieTheMovieDatabaseMovieResult);
         startActivity(intent);
     }
 }

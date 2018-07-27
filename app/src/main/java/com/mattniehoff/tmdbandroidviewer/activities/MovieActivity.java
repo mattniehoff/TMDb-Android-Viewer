@@ -6,7 +6,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.mattniehoff.tmdbandroidviewer.R;
-import com.mattniehoff.tmdbandroidviewer.model.Result;
+import com.mattniehoff.tmdbandroidviewer.model.TheMovieDatabaseMovieResult;
 import com.squareup.picasso.Picasso;
 
 public class MovieActivity extends AppCompatActivity {
@@ -31,12 +31,12 @@ public class MovieActivity extends AppCompatActivity {
         plotTextView = findViewById(R.id.synopsis_tv);
 
         Bundle data = getIntent().getExtras();
-        Result movieResult = data.getParcelable(RESULT_EXTRA);
+        TheMovieDatabaseMovieResult movieTheMovieDatabaseMovieResult = data.getParcelable(RESULT_EXTRA);
 
-        Picasso.get().load(movieResult.getMoviePosterUrl()).into(moviePosterImageView);
-        titleTextView.setText(movieResult.getTitle());
-        releaseDateTextView.setText(movieResult.getReleaseDate());
-        voteAverageTextView.setText(Double.toString(movieResult.getVoteAverage()));
-        plotTextView.setText(movieResult.getOverview());
+        Picasso.get().load(movieTheMovieDatabaseMovieResult.getMoviePosterUrl()).into(moviePosterImageView);
+        titleTextView.setText(movieTheMovieDatabaseMovieResult.getTitle());
+        releaseDateTextView.setText(movieTheMovieDatabaseMovieResult.getReleaseDate());
+        voteAverageTextView.setText(Double.toString(movieTheMovieDatabaseMovieResult.getVoteAverage()));
+        plotTextView.setText(movieTheMovieDatabaseMovieResult.getOverview());
     }
 }
