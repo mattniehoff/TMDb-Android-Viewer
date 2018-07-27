@@ -8,4 +8,6 @@
     <string name="failure_message">Failed</string>
     <string name="movie_database_response_code_message_prefix">Response code:</string>
     <string name="title_activity_movie">Movie Details</string>
+    <string name="label_trailers">Trailers:</string>
+    <string name="label_reviews">Reviews:</string>
 </resources>
