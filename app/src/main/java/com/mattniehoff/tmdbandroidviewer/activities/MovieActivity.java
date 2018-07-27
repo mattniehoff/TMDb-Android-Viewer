@@ -1,10 +1,11 @@
-package com.mattniehoff.tmdbandroidviewer;
+package com.mattniehoff.tmdbandroidviewer.activities;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.mattniehoff.tmdbandroidviewer.R;
 import com.mattniehoff.tmdbandroidviewer.model.Result;
 import com.squareup.picasso.Picasso;
 

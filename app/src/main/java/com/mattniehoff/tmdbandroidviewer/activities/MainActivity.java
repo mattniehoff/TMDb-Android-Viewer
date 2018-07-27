@@ -1,4 +1,4 @@
-package com.mattniehoff.tmdbandroidviewer;
+package com.mattniehoff.tmdbandroidviewer.activities;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -10,6 +10,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.mattniehoff.tmdbandroidviewer.BuildConfig;
+import com.mattniehoff.tmdbandroidviewer.R;
+import com.mattniehoff.tmdbandroidviewer.adapters.MovieAdapter;
 import com.mattniehoff.tmdbandroidviewer.model.Result;
 import com.mattniehoff.tmdbandroidviewer.model.TheMovieDatabaseResponse;
 import com.mattniehoff.tmdbandroidviewer.network.MovieDatabaseNetworkUtils;
