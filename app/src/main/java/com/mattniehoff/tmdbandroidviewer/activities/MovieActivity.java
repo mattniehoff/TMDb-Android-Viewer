@@ -68,10 +68,10 @@ public class MovieActivity extends AppCompatActivity {
         voteAverageTextView.setText(Double.toString(movieTheMovieDatabaseMovieResult.getVoteAverage()));
         plotTextView.setText(movieTheMovieDatabaseMovieResult.getOverview());
 
-        configureAndPopulateReviewsRecyclerView(movieTheMovieDatabaseMovieResult.getId());
+        configureAndPopulateReviewsAndVideosRecyclerView(movieTheMovieDatabaseMovieResult.getId());
     }
 
-    private void configureAndPopulateReviewsRecyclerView(int movieId) {
+    private void configureAndPopulateReviewsAndVideosRecyclerView(int movieId) {
         // Review RecyclerView
         reviewRecyclerView = (RecyclerView) findViewById(R.id.reviews_recycler_view);
         reviewRecyclerView.setHasFixedSize(true);
