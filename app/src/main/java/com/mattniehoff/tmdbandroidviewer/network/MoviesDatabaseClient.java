@@ -2,6 +2,7 @@ package com.mattniehoff.tmdbandroidviewer.network;
 
 import com.mattniehoff.tmdbandroidviewer.model.TheMovieDatabaseResponse;
 import com.mattniehoff.tmdbandroidviewer.model.TheMovieDatabaseReviewsResponse;
+import com.mattniehoff.tmdbandroidviewer.model.TheMovieDatabaseVideosResponse;
 
 import java.util.List;
 
@@ -21,4 +22,7 @@ public interface MoviesDatabaseClient {
 
     @GET("movie/{id}/reviews")
     Call<TheMovieDatabaseReviewsResponse> reviewsByMovieId(@Path("id") int movieId, @Query("api_key") String apiKey);
+
+    @GET("movie/{id}/videos")
+    Call<TheMovieDatabaseVideosResponse> videosByMovieId(@Path("id") int movieId, @Query("api_key") String apiKey);
 }
