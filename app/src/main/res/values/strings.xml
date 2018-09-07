@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">TMDb Android Viewer</string>
     <string name="menu_title_change_sort">Change Sort</string>
+    <string name="menu_title_change_to_favorites">Toggle Favorites</string>
     <string name="error_invalid_movie_database_query_type">Invalid movie database query type passed: </string>
     <string name="change_sort_prefix">Sorted by</string>
     <string name="rating">Rating</string>

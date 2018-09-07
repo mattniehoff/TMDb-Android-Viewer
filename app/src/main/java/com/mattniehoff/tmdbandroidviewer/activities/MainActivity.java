@@ -1,6 +1,10 @@
 package com.mattniehoff.tmdbandroidviewer.activities;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProvider;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -18,8 +22,10 @@ import com.mattniehoff.tmdbandroidviewer.model.TheMovieDatabaseResponse;
 import com.mattniehoff.tmdbandroidviewer.network.MovieDatabaseNetworkUtils;
 import com.mattniehoff.tmdbandroidviewer.network.MovieDatabaseQueryType;
 import com.mattniehoff.tmdbandroidviewer.network.MoviesDatabaseClient;
+import com.mattniehoff.tmdbandroidviewer.viewmodel.MainViewModel;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -35,6 +41,8 @@ public class MainActivity extends AppCompatActivity
     private RecyclerView.LayoutManager layoutManager;
     private String[] testData;
     private MovieDatabaseQueryType movieDatabaseQueryType;
+
+    private MainViewModel mainViewModel;
 
     private static final String TMDB_API_KEY = BuildConfig.TMDB_API_KEY;
 
@@ -57,6 +65,17 @@ public class MainActivity extends AppCompatActivity
         recyclerView.setAdapter(adapter);
 
         populateData();
+
+        // From https://codelabs.developers.google.com/codelabs/android-room-with-a-view/#13
+        mainViewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+        mainViewModel.getFavorites().observe(this, new Observer<List<TheMovieDatabaseMovieResult>>() {
+            @Override
+            public void onChanged(@Nullable List<TheMovieDatabaseMovieResult> theMovieDatabaseMovieResults) {
+                if (movieDatabaseQueryType == MovieDatabaseQueryType.MOVIES_FAVORITE) {
+                    refreshFavorites(theMovieDatabaseMovieResults);
+                }
+            }
+        });
     }
 
     @Override
@@ -74,6 +93,8 @@ public class MainActivity extends AppCompatActivity
                 changeSort();
                 populateData();
                 return true;
+            case R.id.toggle_favorites:
+                refreshFavorites();
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -129,6 +150,10 @@ public class MainActivity extends AppCompatActivity
                 showFailureMessage();
             }
         });
+    }
+
+    private void refreshFavorites(List<TheMovieDatabaseMovieResult> theMovieDatabaseMovieResults) {
+        adapter.updateData(theMovieDatabaseMovieResults);
     }
 
     private void showFailureMessage() {
