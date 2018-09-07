@@ -6,6 +6,7 @@ public class TheMovieDatabaseVideosResult {
 
 	private static final String THUMBNAIL_URL_BASE = "https://img.youtube.com/vi/";
 	private static final String THUMBNAIL_URL_SUFFIX = "/0.jpg";
+	private static final String YOUTUBE_URL_BASE = "https://www.youtube.com/watch?v=";
 
 	@SerializedName("site")
 	private String site;
@@ -113,4 +114,8 @@ public class TheMovieDatabaseVideosResult {
 			",key = '" + key + '\'' + 
 			"}";
 		}
+
+	public String getYoutubeUri() {
+		return YOUTUBE_URL_BASE + this.key;
+	}
 }

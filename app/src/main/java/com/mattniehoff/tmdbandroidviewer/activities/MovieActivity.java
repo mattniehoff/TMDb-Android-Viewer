@@ -1,5 +1,7 @@
 package com.mattniehoff.tmdbandroidviewer.activities;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
@@ -31,7 +33,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 import static com.mattniehoff.tmdbandroidviewer.BuildConfig.TMDB_API_KEY;
 
-public class MovieActivity extends AppCompatActivity {
+public class MovieActivity extends AppCompatActivity
+        implements VideoAdapter.ListItemClickListener {
 
     public static final String RESULT_EXTRA = "result_extra";
 
@@ -89,7 +92,7 @@ public class MovieActivity extends AppCompatActivity {
         videoLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         videoRecyclerView.setLayoutManager(videoLayoutManager);
 
-        videoAdapter = new VideoAdapter(getApplicationContext(), new ArrayList<TheMovieDatabaseVideosResult>());
+        videoAdapter = new VideoAdapter(getApplicationContext(), new ArrayList<TheMovieDatabaseVideosResult>(), this);
         videoRecyclerView.setAdapter(videoAdapter);
 
         // See https://stackoverflow.com/a/27037230/2107568 for divider decoration
@@ -160,5 +163,12 @@ public class MovieActivity extends AppCompatActivity {
 
     private void showFailureMessage() {
         Toast.makeText(this, R.string.failure_message, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onListItemClick(TheMovieDatabaseVideosResult movieDatabaseVideosResult) {
+        Uri url = Uri.parse(movieDatabaseVideosResult.getYoutubeUri());
+        Intent intent = new Intent(Intent.ACTION_VIEW, url);
+        startActivity(intent);
     }
 }

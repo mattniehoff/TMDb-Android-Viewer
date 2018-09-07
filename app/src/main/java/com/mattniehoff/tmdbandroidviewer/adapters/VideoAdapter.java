@@ -19,8 +19,14 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.ViewHolder> 
 
     private Context context;
     private List<TheMovieDatabaseVideosResult> data;
+    private ListItemClickListener clickListener;
 
-    class ViewHolder extends RecyclerView.ViewHolder {
+    public interface ListItemClickListener {
+        void onListItemClick(TheMovieDatabaseVideosResult movieDatabaseVideosResult);
+    }
+
+    class ViewHolder extends RecyclerView.ViewHolder
+            implements View.OnClickListener {
         public ImageView videoThumbnailImageView;
         public TextView videoTitleTextView;
 
@@ -28,12 +34,21 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.ViewHolder> 
             super(v);
             videoThumbnailImageView = (ImageView) v.findViewById(R.id.video_thumbnail);
             videoTitleTextView = (TextView) v.findViewById(R.id.video_title);
+            videoThumbnailImageView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View view) {
+            int clickedPosition = getAdapterPosition();
+            TheMovieDatabaseVideosResult clickedmovieDatabaseVideosResult = data.get(clickedPosition);
+            clickListener.onListItemClick(clickedmovieDatabaseVideosResult);
         }
     }
 
-    public VideoAdapter(Context context, List<TheMovieDatabaseVideosResult> data) {
+    public VideoAdapter(Context context, List<TheMovieDatabaseVideosResult> data, ListItemClickListener listener) {
         this.context = context;
         this.data = data;
+        this.clickListener = listener;
 
         notifyDataSetChanged();
     }
