@@ -4,6 +4,9 @@ import com.google.gson.annotations.SerializedName;
 
 public class TheMovieDatabaseVideosResult {
 
+	private static final String THUMBNAIL_URL_BASE = "https://img.youtube.com/vi/";
+	private static final String THUMBNAIL_URL_SUFFIX = "/0.jpg";
+
 	@SerializedName("site")
 	private String site;
 
@@ -90,6 +93,10 @@ public class TheMovieDatabaseVideosResult {
 
 	public String getKey(){
 		return key;
+	}
+
+	public String getVideoThumbnailUrl() {
+		return THUMBNAIL_URL_BASE + this.key + THUMBNAIL_URL_SUFFIX;
 	}
 
 	@Override

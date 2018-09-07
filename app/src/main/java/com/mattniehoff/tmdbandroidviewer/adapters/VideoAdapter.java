@@ -6,10 +6,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.mattniehoff.tmdbandroidviewer.R;
 import com.mattniehoff.tmdbandroidviewer.model.TheMovieDatabaseVideosResult;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -19,13 +21,13 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.ViewHolder> 
     private List<TheMovieDatabaseVideosResult> data;
 
     class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView reviewAuthorTextView;
-        public TextView reviewContentTextView;
+        public ImageView videoThumbnailImageView;
+        public TextView videoTitleTextView;
 
         public ViewHolder(View v) {
             super(v);
-            reviewAuthorTextView = (TextView) v.findViewById(R.id.review_author);
-            reviewContentTextView = (TextView) v.findViewById(R.id.review_content);
+            videoThumbnailImageView = (ImageView) v.findViewById(R.id.video_thumbnail);
+            videoTitleTextView = (TextView) v.findViewById(R.id.video_title);
         }
     }
 
@@ -40,7 +42,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.ViewHolder> 
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        View view = layoutInflater.inflate(R.layout.item_review, parent, false);
+        View view = layoutInflater.inflate(R.layout.item_video, parent, false);
         return new ViewHolder(view);
     }
 
@@ -48,11 +50,11 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.ViewHolder> 
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         TheMovieDatabaseVideosResult result = data.get(position);
         if (result != null) {
-            holder.reviewAuthorTextView.setText(result.getName());
-            holder.reviewContentTextView.setText(result.getId());
+            //holder.videoThumbnailImageView.setText(result.getName());
+            Picasso.get().load(result.getVideoThumbnailUrl()).into(holder.videoThumbnailImageView);
+            holder.videoTitleTextView.setText(result.getName());
         } else {
-            holder.reviewAuthorTextView.setText(R.string.invalid_review_data_text);
-            holder.reviewContentTextView.setText("");
+            holder.videoTitleTextView.setText(R.string.invalid_trailer_message);
         }
     }
 

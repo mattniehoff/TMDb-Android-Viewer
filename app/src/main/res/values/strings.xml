@@ -12,4 +12,5 @@
     <string name="label_reviews">Reviews:</string>
     <string name="label_videos">Trailers:</string>
     <string name="invalid_review_data_text">Invalid Review Data</string>
+    <string name="invalid_trailer_message">Invalid trailer</string>
 </resources>

@@ -86,7 +86,7 @@ public class MovieActivity extends AppCompatActivity {
         videoRecyclerView = (RecyclerView) findViewById(R.id.videos_recycler_view);
         videoRecyclerView.setHasFixedSize(true);
 
-        videoLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        videoLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         videoRecyclerView.setLayoutManager(videoLayoutManager);
 
         videoAdapter = new VideoAdapter(getApplicationContext(), new ArrayList<TheMovieDatabaseVideosResult>());
