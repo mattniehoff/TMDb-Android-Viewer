@@ -65,6 +65,10 @@ public class TheMovieDatabaseMovieResult implements Parcelable{
     @Expose
     private String releaseDate;
 
+    public TheMovieDatabaseMovieResult() {
+
+    }
+
     protected TheMovieDatabaseMovieResult(Parcel in) {
         if (in.readByte() == 0) {
             voteCount = null;
