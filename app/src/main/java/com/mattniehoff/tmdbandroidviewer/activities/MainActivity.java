@@ -94,7 +94,8 @@ public class MainActivity extends AppCompatActivity
                 populateData();
                 return true;
             case R.id.toggle_favorites:
-                refreshFavorites();
+                changeSortToFavorites();
+                refreshFavorites(mainViewModel.getFavorites().getValue());
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -113,7 +114,22 @@ public class MainActivity extends AppCompatActivity
         Toast.makeText(this, toastMessage, Toast.LENGTH_LONG).show();
     }
 
+    private void changeSortToFavorites() {
+        if (movieDatabaseQueryType != MovieDatabaseQueryType.MOVIES_FAVORITE) {
+            movieDatabaseQueryType = MovieDatabaseQueryType.MOVIES_FAVORITE;
+        } else {
+            changeSort();
+            populateData();
+        }
+    }
+
     private void populateData() {
+        if (movieDatabaseQueryType == MovieDatabaseQueryType.MOVIES_FAVORITE) {
+            refreshFavorites(mainViewModel.getFavorites().getValue());
+            return;
+        }
+
+
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(MovieDatabaseNetworkUtils.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -153,7 +169,9 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void refreshFavorites(List<TheMovieDatabaseMovieResult> theMovieDatabaseMovieResults) {
-        adapter.updateData(theMovieDatabaseMovieResults);
+        if (movieDatabaseQueryType == MovieDatabaseQueryType.MOVIES_FAVORITE) {
+            adapter.updateData(theMovieDatabaseMovieResults);
+        }
     }
 
     private void showFailureMessage() {
