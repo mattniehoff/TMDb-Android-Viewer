@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,6 +21,7 @@ import com.mattniehoff.tmdbandroidviewer.model.TheMovieDatabaseReviewsResponse;
 import com.mattniehoff.tmdbandroidviewer.model.TheMovieDatabaseReviewsResult;
 import com.mattniehoff.tmdbandroidviewer.model.TheMovieDatabaseVideosResponse;
 import com.mattniehoff.tmdbandroidviewer.model.TheMovieDatabaseVideosResult;
+import com.mattniehoff.tmdbandroidviewer.model.database.FavoriteRepository;
 import com.mattniehoff.tmdbandroidviewer.network.MovieDatabaseNetworkUtils;
 import com.mattniehoff.tmdbandroidviewer.network.MoviesDatabaseClient;
 import com.squareup.picasso.Picasso;
@@ -43,6 +46,7 @@ public class MovieActivity extends AppCompatActivity
     private TextView releaseDateTextView;
     private TextView voteAverageTextView;
     private TextView plotTextView;
+    private CheckBox favoritesCheckBox;
 
     private RecyclerView reviewRecyclerView;
     private RecyclerView videoRecyclerView;
@@ -50,6 +54,9 @@ public class MovieActivity extends AppCompatActivity
     private VideoAdapter videoAdapter;
     private LinearLayoutManager reviewLayoutManager;
     private LinearLayoutManager videoLayoutManager;
+
+    private FavoriteRepository repository;
+    private boolean isFavorite;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +70,7 @@ public class MovieActivity extends AppCompatActivity
         plotTextView = findViewById(R.id.synopsis_tv);
 
         Bundle data = getIntent().getExtras();
-        TheMovieDatabaseMovieResult movieTheMovieDatabaseMovieResult = data.getParcelable(RESULT_EXTRA);
+        final TheMovieDatabaseMovieResult movieTheMovieDatabaseMovieResult = data.getParcelable(RESULT_EXTRA);
 
         Picasso.get().load(movieTheMovieDatabaseMovieResult.getMoviePosterUrl()).into(moviePosterImageView);
         titleTextView.setText(movieTheMovieDatabaseMovieResult.getTitle());
@@ -72,6 +79,22 @@ public class MovieActivity extends AppCompatActivity
         plotTextView.setText(movieTheMovieDatabaseMovieResult.getOverview());
 
         configureAndPopulateReviewsAndVideosRecyclerView(movieTheMovieDatabaseMovieResult.getId());
+
+        favoritesCheckBox = findViewById(R.id.favorite_check_box);
+        repository = new FavoriteRepository(getApplication());
+        isFavorite = repository.favoriteExists(movieTheMovieDatabaseMovieResult.getId());
+
+        favoritesCheckBox.setChecked(isFavorite);
+        favoritesCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                if (isChecked){
+                    repository.insert(movieTheMovieDatabaseMovieResult);
+                } else {
+                    repository.delete(movieTheMovieDatabaseMovieResult);
+                }
+            }
+        });
     }
 
     private void configureAndPopulateReviewsAndVideosRecyclerView(int movieId) {

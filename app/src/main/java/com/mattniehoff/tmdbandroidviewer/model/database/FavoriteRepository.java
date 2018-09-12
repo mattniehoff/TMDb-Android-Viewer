@@ -23,8 +23,26 @@ public class FavoriteRepository {
         return allFavorites;
     }
 
+    public void favoriteExists(int id){
+        return new favoriteExistsAsyncTask(favoriteDao).execute(id);
+    }
 
-    public void insert (TheMovieDatabaseMovieResult favorite) {
+    private static class favoriteExistsAsyncTask extends AsyncTask<Integer, Void, Void> {
+
+        private FavoriteDao favoriteDao;
+
+        favoriteExistsAsyncTask(FavoriteDao dao) {
+            favoriteDao = dao;
+        }
+
+        @Override
+        protected Void doInBackground(final Integer... params) {
+            favoriteDao.getFavoriteId(params[0]);
+            return null;
+        }
+    }
+
+    public void insert(TheMovieDatabaseMovieResult favorite) {
         new insertAsyncTask(favoriteDao).execute(favorite);
     }
 
@@ -39,6 +57,25 @@ public class FavoriteRepository {
         @Override
         protected Void doInBackground(final TheMovieDatabaseMovieResult... params) {
             favoriteDao.insertFavorite(params[0]);
+            return null;
+        }
+    }
+
+    public void delete(TheMovieDatabaseMovieResult favorite) {
+        new deleteAsyncTask(favoriteDao).execute(favorite);
+    }
+
+    private static class deleteAsyncTask extends AsyncTask<TheMovieDatabaseMovieResult, Void, Void> {
+
+        private FavoriteDao favoriteDao;
+
+        deleteAsyncTask(FavoriteDao dao) {
+            favoriteDao = dao;
+        }
+
+        @Override
+        protected Void doInBackground(final TheMovieDatabaseMovieResult... params) {
+            favoriteDao.deleteFavorite(params[0]);
             return null;
         }
     }

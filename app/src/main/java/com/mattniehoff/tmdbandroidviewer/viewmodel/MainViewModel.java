@@ -25,8 +25,24 @@ public class MainViewModel extends AndroidViewModel {
         return favorites;
     }
 
+    public void delete(TheMovieDatabaseMovieResult favorite) {
+        repository.delete(favorite);
+    }
+
     public void insert(TheMovieDatabaseMovieResult favorite) {
         repository.insert(favorite);
+    }
+
+    public boolean favoriteSaved(TheMovieDatabaseMovieResult favorite) {
+        return repository.favoriteExists(favorite.getId());
+    }
+
+    public void toggleFavorite(TheMovieDatabaseMovieResult favorite) {
+        if (favoriteSaved(favorite)) {
+            delete(favorite);
+        } else {
+            insert(favorite);
+        }
     }
 }
 
