@@ -10,7 +10,7 @@ import com.mattniehoff.tmdbandroidviewer.model.TheMovieDatabaseMovieResult;
 
 // Class adapted from https://codelabs.developers.google.com/codelabs/android-room-with-a-view/#6
 // and Lesson 12: Android Architecture Components
-@Database(entities = {TheMovieDatabaseMovieResult.class}, version = 1)
+@Database(entities = {TheMovieDatabaseMovieResult.class}, version = 1, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
     private static final String LOG_TAG = AppDatabase.class.getSimpleName();
     private static final Object LOCK = new Object();
