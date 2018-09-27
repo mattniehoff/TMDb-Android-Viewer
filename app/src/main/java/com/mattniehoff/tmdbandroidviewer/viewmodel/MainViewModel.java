@@ -33,16 +33,17 @@ public class MainViewModel extends AndroidViewModel {
         repository.insert(favorite);
     }
 
-    public boolean favoriteSaved(TheMovieDatabaseMovieResult favorite) {
-        return repository.favoriteExists(favorite.getId());
-    }
+//    public boolean favoriteSaved(TheMovieDatabaseMovieResult favorite) {
+//        TheMovieDatabaseMovieResult result = repository.getFavoriteResult(favorite.getId()).getValue();
+//        return result == null;
+//    }
 
-    public void toggleFavorite(TheMovieDatabaseMovieResult favorite) {
-        if (favoriteSaved(favorite)) {
-            delete(favorite);
-        } else {
-            insert(favorite);
-        }
-    }
+//    public void toggleFavorite(TheMovieDatabaseMovieResult favorite) {
+//        if (favoriteSaved(favorite)) {
+//            delete(favorite);
+//        } else {
+//            insert(favorite);
+//        }
+//    }
 }
 

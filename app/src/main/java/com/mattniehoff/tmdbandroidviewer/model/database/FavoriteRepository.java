@@ -12,6 +12,7 @@ import java.util.List;
 public class FavoriteRepository {
     private FavoriteDao favoriteDao;
     private LiveData<List<TheMovieDatabaseMovieResult>> allFavorites;
+    private LiveData<TheMovieDatabaseMovieResult> favoriteResult;
 
     public FavoriteRepository(Application application) {
         AppDatabase db = AppDatabase.getInstance(application);
@@ -23,24 +24,15 @@ public class FavoriteRepository {
         return allFavorites;
     }
 
-    public void favoriteExists(int id){
-        return new favoriteExistsAsyncTask(favoriteDao).execute(id);
-    }
-
-    private static class favoriteExistsAsyncTask extends AsyncTask<Integer, Void, Void> {
-
-        private FavoriteDao favoriteDao;
-
-        favoriteExistsAsyncTask(FavoriteDao dao) {
-            favoriteDao = dao;
-        }
-
-        @Override
-        protected Void doInBackground(final Integer... params) {
-            favoriteDao.getFavoriteId(params[0]);
-            return null;
-        }
-    }
+//    public LiveData<TheMovieDatabaseMovieResult> getFavoriteResult(int favoriteId) {
+//        favoriteResult = favoriteDao.getFavoriteId(favoriteId);
+//        return favoriteResult;
+//    }
+//
+//    public boolean favoriteExists(int favoriteId){
+//        favoriteResult = getFavoriteResult(favoriteId);
+//        return favoriteResult != null;
+//    }
 
     public void insert(TheMovieDatabaseMovieResult favorite) {
         new insertAsyncTask(favoriteDao).execute(favorite);

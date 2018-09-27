@@ -1,7 +1,10 @@
 package com.mattniehoff.tmdbandroidviewer.activities;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.net.Uri;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
@@ -23,10 +26,13 @@ import com.mattniehoff.tmdbandroidviewer.model.TheMovieDatabaseVideosResponse;
 import com.mattniehoff.tmdbandroidviewer.model.TheMovieDatabaseVideosResult;
 import com.mattniehoff.tmdbandroidviewer.model.database.FavoriteRepository;
 import com.mattniehoff.tmdbandroidviewer.network.MovieDatabaseNetworkUtils;
+import com.mattniehoff.tmdbandroidviewer.network.MovieDatabaseQueryType;
 import com.mattniehoff.tmdbandroidviewer.network.MoviesDatabaseClient;
+import com.mattniehoff.tmdbandroidviewer.viewmodel.MainViewModel;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -58,6 +64,8 @@ public class MovieActivity extends AppCompatActivity
     private FavoriteRepository repository;
     private boolean isFavorite;
 
+    private MainViewModel mainViewModel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,17 +89,31 @@ public class MovieActivity extends AppCompatActivity
         configureAndPopulateReviewsAndVideosRecyclerView(movieTheMovieDatabaseMovieResult.getId());
 
         favoritesCheckBox = findViewById(R.id.favorite_check_box);
-        repository = new FavoriteRepository(getApplication());
-        isFavorite = repository.favoriteExists(movieTheMovieDatabaseMovieResult.getId());
+//        repository = new FavoriteRepository(getApplication());
+//        isFavorite = repository.favoriteExists(movieTheMovieDatabaseMovieResult.getId());
 
-        favoritesCheckBox.setChecked(isFavorite);
+//        favoritesCheckBox.setChecked(isFavorite);
+
+        // From https://codelabs.developers.google.com/codelabs/android-room-with-a-view/#13
+        mainViewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+        mainViewModel.getFavorites().observe(this, new Observer<List<TheMovieDatabaseMovieResult>>() {
+            @Override
+            public void onChanged(@Nullable List<TheMovieDatabaseMovieResult> theMovieDatabaseMovieResults) {
+                if (theMovieDatabaseMovieResults.contains(movieTheMovieDatabaseMovieResult)){
+                    favoritesCheckBox.setChecked(true);
+                } else {
+                    favoritesCheckBox.setChecked(false);
+                }
+            }
+        });
+
         favoritesCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
                 if (isChecked){
-                    repository.insert(movieTheMovieDatabaseMovieResult);
+                    mainViewModel.insert(movieTheMovieDatabaseMovieResult);
                 } else {
-                    repository.delete(movieTheMovieDatabaseMovieResult);
+                    mainViewModel.delete(movieTheMovieDatabaseMovieResult);
                 }
             }
         });
