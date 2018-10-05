@@ -6,6 +6,7 @@ import android.arch.lifecycle.LiveData;
 
 import com.mattniehoff.tmdbandroidviewer.model.TheMovieDatabaseMovieResult;
 import com.mattniehoff.tmdbandroidviewer.model.database.FavoriteRepository;
+import com.mattniehoff.tmdbandroidviewer.network.MovieDatabaseQueryType;
 
 import java.util.List;
 
@@ -14,9 +15,12 @@ public class MainViewModel extends AndroidViewModel {
     private FavoriteRepository repository;
 
     private LiveData<List<TheMovieDatabaseMovieResult>> favorites;
+    private MovieDatabaseQueryType movieDatabaseQueryType;
+
 
     public MainViewModel(Application application) {
         super(application);
+        movieDatabaseQueryType = MovieDatabaseQueryType.MOVIES_BY_POPULARITY;
         repository = new FavoriteRepository(application);
         favorites = repository.getAllFavorites();
     }
@@ -25,25 +29,23 @@ public class MainViewModel extends AndroidViewModel {
         return favorites;
     }
 
-    public void delete(TheMovieDatabaseMovieResult favorite) {
-        repository.delete(favorite);
+    public MovieDatabaseQueryType getMovieDatabaseQueryType(){
+        return movieDatabaseQueryType;
     }
 
-    public void insert(TheMovieDatabaseMovieResult favorite) {
-        repository.insert(favorite);
+    public void setMovieDatabaseQueryType(MovieDatabaseQueryType movieDatabaseQueryType){
+        this.movieDatabaseQueryType = movieDatabaseQueryType;
     }
 
-//    public boolean favoriteSaved(TheMovieDatabaseMovieResult favorite) {
-//        TheMovieDatabaseMovieResult result = repository.getFavoriteResult(favorite.getId()).getValue();
-//        return result == null;
+    // Shouldn't be adding/removing favorites from this viewmodel.
+//    public void delete(TheMovieDatabaseMovieResult favorite) {
+//        repository.delete(favorite);
+//    }
+//
+//    public void insert(TheMovieDatabaseMovieResult favorite) {
+//        repository.insert(favorite);
 //    }
 
-//    public void toggleFavorite(TheMovieDatabaseMovieResult favorite) {
-//        if (favoriteSaved(favorite)) {
-//            delete(favorite);
-//        } else {
-//            insert(favorite);
-//        }
-//    }
+
 }
 

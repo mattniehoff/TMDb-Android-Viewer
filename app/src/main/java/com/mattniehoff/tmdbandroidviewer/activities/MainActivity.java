@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity
     private MovieAdapter adapter;
     private RecyclerView.LayoutManager layoutManager;
     private String[] testData;
-    private MovieDatabaseQueryType movieDatabaseQueryType;
+   // private MovieDatabaseQueryType movieDatabaseQueryType;
 
     private MainViewModel mainViewModel;
 
@@ -51,7 +51,18 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        movieDatabaseQueryType = MovieDatabaseQueryType.MOVIES_BY_POPULARITY;
+        // From https://codelabs.developers.google.com/codelabs/android-room-with-a-view/#13
+        mainViewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+        mainViewModel.getFavorites().observe(this, new Observer<List<TheMovieDatabaseMovieResult>>() {
+            @Override
+            public void onChanged(@Nullable List<TheMovieDatabaseMovieResult> theMovieDatabaseMovieResults) {
+                if (mainViewModel.getMovieDatabaseQueryType() == MovieDatabaseQueryType.MOVIES_FAVORITE) {
+                    refreshFavorites(theMovieDatabaseMovieResults);
+                }
+            }
+        });
+
+       // movieDatabaseQueryType = MovieDatabaseQueryType.MOVIES_BY_POPULARITY;
 
         recyclerView = (RecyclerView) findViewById(R.id.movies_recycler_view);
 
@@ -65,17 +76,6 @@ public class MainActivity extends AppCompatActivity
         recyclerView.setAdapter(adapter);
 
         populateData();
-
-        // From https://codelabs.developers.google.com/codelabs/android-room-with-a-view/#13
-        mainViewModel = ViewModelProviders.of(this).get(MainViewModel.class);
-        mainViewModel.getFavorites().observe(this, new Observer<List<TheMovieDatabaseMovieResult>>() {
-            @Override
-            public void onChanged(@Nullable List<TheMovieDatabaseMovieResult> theMovieDatabaseMovieResults) {
-                if (movieDatabaseQueryType == MovieDatabaseQueryType.MOVIES_FAVORITE) {
-                    refreshFavorites(theMovieDatabaseMovieResults);
-                }
-            }
-        });
     }
 
     @Override
@@ -103,11 +103,11 @@ public class MainActivity extends AppCompatActivity
 
     private void changeSort() {
         String toastMessage = getString(R.string.change_sort_prefix);
-        if (movieDatabaseQueryType == MovieDatabaseQueryType.MOVIES_BY_POPULARITY) {
-            movieDatabaseQueryType = MovieDatabaseQueryType.MOVIES_BY_RATING;
+        if (mainViewModel.getMovieDatabaseQueryType() == MovieDatabaseQueryType.MOVIES_BY_POPULARITY) {
+            mainViewModel.setMovieDatabaseQueryType(MovieDatabaseQueryType.MOVIES_BY_RATING);
             toastMessage += getString(R.string.rating);
         } else {
-            movieDatabaseQueryType = MovieDatabaseQueryType.MOVIES_BY_POPULARITY;
+            mainViewModel.setMovieDatabaseQueryType(MovieDatabaseQueryType.MOVIES_BY_POPULARITY);
             toastMessage += getString(R.string.popularity);
         }
 
@@ -115,8 +115,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void changeSortToFavorites() {
-        if (movieDatabaseQueryType != MovieDatabaseQueryType.MOVIES_FAVORITE) {
-            movieDatabaseQueryType = MovieDatabaseQueryType.MOVIES_FAVORITE;
+        if (mainViewModel.getMovieDatabaseQueryType() != MovieDatabaseQueryType.MOVIES_FAVORITE) {
+            mainViewModel.setMovieDatabaseQueryType(MovieDatabaseQueryType.MOVIES_FAVORITE);
         } else {
             changeSort();
             populateData();
@@ -124,7 +124,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void populateData() {
-        if (movieDatabaseQueryType == MovieDatabaseQueryType.MOVIES_FAVORITE) {
+        if (mainViewModel.getMovieDatabaseQueryType() == MovieDatabaseQueryType.MOVIES_FAVORITE) {
             refreshFavorites(mainViewModel.getFavorites().getValue());
             return;
         }
@@ -138,7 +138,7 @@ public class MainActivity extends AppCompatActivity
         MoviesDatabaseClient client = retrofit.create(MoviesDatabaseClient.class);
         Call<TheMovieDatabaseResponse> call;
 
-        switch (movieDatabaseQueryType) {
+        switch (mainViewModel.getMovieDatabaseQueryType()) {
 
             case MOVIES_BY_POPULARITY:
                 call = client.moviesByPopularity(TMDB_API_KEY);
@@ -147,7 +147,7 @@ public class MainActivity extends AppCompatActivity
                 call = client.moviesByRating(TMDB_API_KEY);
                 break;
             default:
-                Toast.makeText(this, getString(R.string.error_invalid_movie_database_query_type) + movieDatabaseQueryType, Toast.LENGTH_LONG);
+                Toast.makeText(this, getString(R.string.error_invalid_movie_database_query_type) + mainViewModel.getMovieDatabaseQueryType(), Toast.LENGTH_LONG);
                 return;
         }
 
@@ -169,7 +169,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void refreshFavorites(List<TheMovieDatabaseMovieResult> theMovieDatabaseMovieResults) {
-        if (movieDatabaseQueryType == MovieDatabaseQueryType.MOVIES_FAVORITE) {
+        if (mainViewModel.getMovieDatabaseQueryType() == MovieDatabaseQueryType.MOVIES_FAVORITE) {
             adapter.updateData(theMovieDatabaseMovieResults);
         }
     }

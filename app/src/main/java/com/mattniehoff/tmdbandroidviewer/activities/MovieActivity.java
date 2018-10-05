@@ -107,16 +107,16 @@ public class MovieActivity extends AppCompatActivity
             }
         });
 
-        favoritesCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                if (isChecked){
-                    mainViewModel.insert(movieTheMovieDatabaseMovieResult);
-                } else {
-                    mainViewModel.delete(movieTheMovieDatabaseMovieResult);
-                }
-            }
-        });
+//        favoritesCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+//                if (isChecked){
+//                    mainViewModel.insert(movieTheMovieDatabaseMovieResult);
+//                } else {
+//                    mainViewModel.delete(movieTheMovieDatabaseMovieResult);
+//                }
+//            }
+//        });
     }
 
     private void configureAndPopulateReviewsAndVideosRecyclerView(int movieId) {
