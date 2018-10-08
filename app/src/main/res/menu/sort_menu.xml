@@ -10,7 +10,7 @@
 
     <item
         android:id="@+id/toggle_favorites"
-        android:icon="@drawable/ic_launcher_background"
+        android:icon="@drawable/ic_star_light"
         android:title="@string/menu_title_change_to_favorites"
         app:showAsAction="always" />
 </menu>
