@@ -46,6 +46,7 @@ public class MovieActivity extends AppCompatActivity
         implements VideoAdapter.ListItemClickListener {
 
     public static final String RESULT_EXTRA = "result_extra";
+    public static final String IS_FAVORITE_EXTRA = "is_favorite_extra";
 
     private ImageView moviePosterImageView;
     private TextView titleTextView;
@@ -64,8 +65,6 @@ public class MovieActivity extends AppCompatActivity
     private FavoriteRepository repository;
     private boolean isFavorite;
 
-    private MainViewModel mainViewModel;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,6 +78,7 @@ public class MovieActivity extends AppCompatActivity
 
         Bundle data = getIntent().getExtras();
         final TheMovieDatabaseMovieResult movieTheMovieDatabaseMovieResult = data.getParcelable(RESULT_EXTRA);
+        isFavorite = data.getBoolean(IS_FAVORITE_EXTRA);
 
         Picasso.get().load(movieTheMovieDatabaseMovieResult.getMoviePosterUrl()).into(moviePosterImageView);
         titleTextView.setText(movieTheMovieDatabaseMovieResult.getTitle());
@@ -89,24 +89,9 @@ public class MovieActivity extends AppCompatActivity
         configureAndPopulateReviewsAndVideosRecyclerView(movieTheMovieDatabaseMovieResult.getId());
 
         favoritesCheckBox = findViewById(R.id.favorite_check_box);
-//        repository = new FavoriteRepository(getApplication());
-//        isFavorite = repository.favoriteExists(movieTheMovieDatabaseMovieResult.getId());
+        favoritesCheckBox.setChecked(isFavorite);
 
-//        favoritesCheckBox.setChecked(isFavorite);
-
-        // From https://codelabs.developers.google.com/codelabs/android-room-with-a-view/#13
-        mainViewModel = ViewModelProviders.of(this).get(MainViewModel.class);
-        mainViewModel.getFavorites().observe(this, new Observer<List<TheMovieDatabaseMovieResult>>() {
-            @Override
-            public void onChanged(@Nullable List<TheMovieDatabaseMovieResult> theMovieDatabaseMovieResults) {
-                if (theMovieDatabaseMovieResults.contains(movieTheMovieDatabaseMovieResult)){
-                    favoritesCheckBox.setChecked(true);
-                } else {
-                    favoritesCheckBox.setChecked(false);
-                }
-            }
-        });
-
+//
 //        favoritesCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 //            @Override
 //            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {

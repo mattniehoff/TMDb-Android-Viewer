@@ -182,6 +182,7 @@ public class MainActivity extends AppCompatActivity
     public void onListItemClick(TheMovieDatabaseMovieResult movieTheMovieDatabaseMovieResult) {
         Intent intent = new Intent(this, MovieActivity.class);
         intent.putExtra(MovieActivity.RESULT_EXTRA, movieTheMovieDatabaseMovieResult);
+        intent.putExtra(MovieActivity.IS_FAVORITE_EXTRA, true);
         startActivity(intent);
     }
 }
