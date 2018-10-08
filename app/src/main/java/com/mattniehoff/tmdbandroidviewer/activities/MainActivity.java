@@ -17,6 +17,7 @@ import com.mattniehoff.tmdbandroidviewer.BuildConfig;
 import com.mattniehoff.tmdbandroidviewer.R;
 import com.mattniehoff.tmdbandroidviewer.adapters.MovieAdapter;
 import com.mattniehoff.tmdbandroidviewer.model.TheMovieDatabaseMovieResult;
+import com.mattniehoff.tmdbandroidviewer.model.TheMovieDatabaseMovieResultUtils;
 import com.mattniehoff.tmdbandroidviewer.model.TheMovieDatabaseResponse;
 import com.mattniehoff.tmdbandroidviewer.network.MovieDatabaseNetworkUtils;
 import com.mattniehoff.tmdbandroidviewer.network.MovieDatabaseQueryType;
@@ -183,7 +184,7 @@ public class MainActivity extends AppCompatActivity
     public void onListItemClick(TheMovieDatabaseMovieResult movieTheMovieDatabaseMovieResult) {
         Intent intent = new Intent(this, MovieActivity.class);
         intent.putExtra(MovieActivity.MOVIE_EXTRA, movieTheMovieDatabaseMovieResult);
-        intent.putExtra(MovieActivity.IS_FAVORITE_EXTRA, true);
+        intent.putExtra(MovieActivity.IS_FAVORITE_EXTRA, checkIfMovieFavorited(movieTheMovieDatabaseMovieResult.getId()));
         startActivityForResult(intent, MOVIE_ACTIVITY_REQUEST_CODE);
     }
 
@@ -200,6 +201,10 @@ public class MainActivity extends AppCompatActivity
                 mainViewModel.delete(movie);
             }
         }
+    }
 
+    private boolean checkIfMovieFavorited(int movieId) {
+        return TheMovieDatabaseMovieResultUtils
+                .containsMovieId(mainViewModel.getFavorites().getValue(), movieId);
     }
 }
