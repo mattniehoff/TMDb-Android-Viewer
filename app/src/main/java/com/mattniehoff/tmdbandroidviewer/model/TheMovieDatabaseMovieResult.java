@@ -1,5 +1,8 @@
 package com.mattniehoff.tmdbandroidviewer.model;
 
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
+import android.arch.persistence.room.PrimaryKey;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -10,16 +13,20 @@ import java.util.List;
 
 // Class generated with help from http://www.jsonschema2pojo.org/
 // Parcelable implementation inspired from here: http://www.developerphil.com/parcelable-vs-serializable/
-public class Result implements Parcelable{
+@Entity(tableName = "favorite_movie")
+public class TheMovieDatabaseMovieResult implements Parcelable{
 
     private static final String POSTER_URL_BASE = "http://image.tmdb.org/t/p/w185//";
 
     @SerializedName("vote_count")
     @Expose
     private Integer voteCount;
+
+    @PrimaryKey
     @SerializedName("id")
     @Expose
     private Integer id;
+
     @SerializedName("video")
     @Expose
     private Boolean video;
@@ -43,6 +50,7 @@ public class Result implements Parcelable{
     private String originalTitle;
     @SerializedName("genre_ids")
     @Expose
+    @Ignore
     private List<Integer> genreIds = null;
     @SerializedName("backdrop_path")
     @Expose
@@ -57,7 +65,11 @@ public class Result implements Parcelable{
     @Expose
     private String releaseDate;
 
-    protected Result(Parcel in) {
+    public TheMovieDatabaseMovieResult() {
+
+    }
+
+    protected TheMovieDatabaseMovieResult(Parcel in) {
         if (in.readByte() == 0) {
             voteCount = null;
         } else {
@@ -133,15 +145,15 @@ public class Result implements Parcelable{
         return 0;
     }
 
-    public static final Creator<Result> CREATOR = new Creator<Result>() {
+    public static final Creator<TheMovieDatabaseMovieResult> CREATOR = new Creator<TheMovieDatabaseMovieResult>() {
         @Override
-        public Result createFromParcel(Parcel in) {
-            return new Result(in);
+        public TheMovieDatabaseMovieResult createFromParcel(Parcel in) {
+            return new TheMovieDatabaseMovieResult(in);
         }
 
         @Override
-        public Result[] newArray(int size) {
-            return new Result[size];
+        public TheMovieDatabaseMovieResult[] newArray(int size) {
+            return new TheMovieDatabaseMovieResult[size];
         }
     };
 
