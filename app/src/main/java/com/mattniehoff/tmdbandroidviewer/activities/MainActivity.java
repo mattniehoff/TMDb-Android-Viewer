@@ -1,7 +1,6 @@
 package com.mattniehoff.tmdbandroidviewer.activities;
 
 import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.support.annotation.Nullable;
@@ -35,6 +34,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity
         implements MovieAdapter.ListItemClickListener {
+
+    public static final int MOVIE_ACTIVITY_REQUEST_CODE = 1;
 
     private RecyclerView recyclerView;
     private MovieAdapter adapter;
@@ -181,8 +182,24 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onListItemClick(TheMovieDatabaseMovieResult movieTheMovieDatabaseMovieResult) {
         Intent intent = new Intent(this, MovieActivity.class);
-        intent.putExtra(MovieActivity.RESULT_EXTRA, movieTheMovieDatabaseMovieResult);
+        intent.putExtra(MovieActivity.MOVIE_EXTRA, movieTheMovieDatabaseMovieResult);
         intent.putExtra(MovieActivity.IS_FAVORITE_EXTRA, true);
-        startActivity(intent);
+        startActivityForResult(intent, MOVIE_ACTIVITY_REQUEST_CODE);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == MOVIE_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK) {
+            TheMovieDatabaseMovieResult movie = data.getParcelableExtra(MovieActivity.MOVIE_EXTRA);
+            boolean isFavorite = data.getBooleanExtra(MovieActivity.IS_FAVORITE_EXTRA, false);
+            if (isFavorite) {
+                mainViewModel.insert(movie);
+            } else {
+                mainViewModel.delete(movie);
+            }
+        }
+
     }
 }

@@ -1,15 +1,13 @@
 package com.mattniehoff.tmdbandroidviewer.activities;
 
-import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.net.Uri;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.MenuItem;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
@@ -26,13 +24,10 @@ import com.mattniehoff.tmdbandroidviewer.model.TheMovieDatabaseVideosResponse;
 import com.mattniehoff.tmdbandroidviewer.model.TheMovieDatabaseVideosResult;
 import com.mattniehoff.tmdbandroidviewer.model.database.FavoriteRepository;
 import com.mattniehoff.tmdbandroidviewer.network.MovieDatabaseNetworkUtils;
-import com.mattniehoff.tmdbandroidviewer.network.MovieDatabaseQueryType;
 import com.mattniehoff.tmdbandroidviewer.network.MoviesDatabaseClient;
-import com.mattniehoff.tmdbandroidviewer.viewmodel.MainViewModel;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -45,7 +40,7 @@ import static com.mattniehoff.tmdbandroidviewer.BuildConfig.TMDB_API_KEY;
 public class MovieActivity extends AppCompatActivity
         implements VideoAdapter.ListItemClickListener {
 
-    public static final String RESULT_EXTRA = "result_extra";
+    public static final String MOVIE_EXTRA = "movie_extra";
     public static final String IS_FAVORITE_EXTRA = "is_favorite_extra";
 
     private ImageView moviePosterImageView;
@@ -62,8 +57,8 @@ public class MovieActivity extends AppCompatActivity
     private LinearLayoutManager reviewLayoutManager;
     private LinearLayoutManager videoLayoutManager;
 
-    private FavoriteRepository repository;
     private boolean isFavorite;
+    private TheMovieDatabaseMovieResult movie;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,31 +72,25 @@ public class MovieActivity extends AppCompatActivity
         plotTextView = findViewById(R.id.synopsis_tv);
 
         Bundle data = getIntent().getExtras();
-        final TheMovieDatabaseMovieResult movieTheMovieDatabaseMovieResult = data.getParcelable(RESULT_EXTRA);
+        movie = data.getParcelable(MOVIE_EXTRA);
         isFavorite = data.getBoolean(IS_FAVORITE_EXTRA);
 
-        Picasso.get().load(movieTheMovieDatabaseMovieResult.getMoviePosterUrl()).into(moviePosterImageView);
-        titleTextView.setText(movieTheMovieDatabaseMovieResult.getTitle());
-        releaseDateTextView.setText(movieTheMovieDatabaseMovieResult.getReleaseDate());
-        voteAverageTextView.setText(Double.toString(movieTheMovieDatabaseMovieResult.getVoteAverage()));
-        plotTextView.setText(movieTheMovieDatabaseMovieResult.getOverview());
+        Picasso.get().load(movie.getMoviePosterUrl()).into(moviePosterImageView);
+        titleTextView.setText(movie.getTitle());
+        releaseDateTextView.setText(movie.getReleaseDate());
+        voteAverageTextView.setText(Double.toString(movie.getVoteAverage()));
+        plotTextView.setText(movie.getOverview());
 
-        configureAndPopulateReviewsAndVideosRecyclerView(movieTheMovieDatabaseMovieResult.getId());
+        configureAndPopulateReviewsAndVideosRecyclerView(movie.getId());
 
         favoritesCheckBox = findViewById(R.id.favorite_check_box);
         favoritesCheckBox.setChecked(isFavorite);
-
-//
-//        favoritesCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-//            @Override
-//            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-//                if (isChecked){
-//                    mainViewModel.insert(movieTheMovieDatabaseMovieResult);
-//                } else {
-//                    mainViewModel.delete(movieTheMovieDatabaseMovieResult);
-//                }
-//            }
-//        });
+        favoritesCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                isFavorite = isChecked;
+            }
+        });
     }
 
     private void configureAndPopulateReviewsAndVideosRecyclerView(int movieId) {
@@ -200,5 +189,33 @@ public class MovieActivity extends AppCompatActivity
         Uri url = Uri.parse(movieDatabaseVideosResult.getYoutubeUri());
         Intent intent = new Intent(Intent.ACTION_VIEW, url);
         startActivity(intent);
+    }
+
+    @Override
+    public void onBackPressed() {
+        prepareAndSetResult();
+        super.onBackPressed();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                prepareAndSetResult();
+                finish();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void prepareAndSetResult() {
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(MOVIE_EXTRA, movie);
+        bundle.putBoolean(IS_FAVORITE_EXTRA, isFavorite);
+
+        Intent intent = new Intent();
+        intent.putExtras(bundle);
+        setResult(RESULT_OK, intent);
     }
 }

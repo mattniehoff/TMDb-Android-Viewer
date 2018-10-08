@@ -37,14 +37,13 @@ public class MainViewModel extends AndroidViewModel {
         this.movieDatabaseQueryType = movieDatabaseQueryType;
     }
 
-    // Shouldn't be adding/removing favorites from this viewmodel.
-//    public void delete(TheMovieDatabaseMovieResult favorite) {
-//        repository.delete(favorite);
-//    }
-//
-//    public void insert(TheMovieDatabaseMovieResult favorite) {
-//        repository.insert(favorite);
-//    }
+    public void delete(TheMovieDatabaseMovieResult favorite) {
+        repository.delete(favorite);
+    }
+
+    public void insert(TheMovieDatabaseMovieResult favorite) {
+        repository.insert(favorite);
+    }
 
 
 }
