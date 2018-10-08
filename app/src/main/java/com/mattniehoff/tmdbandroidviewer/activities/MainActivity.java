@@ -1,6 +1,9 @@
 package com.mattniehoff.tmdbandroidviewer.activities;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -14,12 +17,15 @@ import com.mattniehoff.tmdbandroidviewer.BuildConfig;
 import com.mattniehoff.tmdbandroidviewer.R;
 import com.mattniehoff.tmdbandroidviewer.adapters.MovieAdapter;
 import com.mattniehoff.tmdbandroidviewer.model.TheMovieDatabaseMovieResult;
+import com.mattniehoff.tmdbandroidviewer.model.TheMovieDatabaseMovieResultUtils;
 import com.mattniehoff.tmdbandroidviewer.model.TheMovieDatabaseResponse;
 import com.mattniehoff.tmdbandroidviewer.network.MovieDatabaseNetworkUtils;
 import com.mattniehoff.tmdbandroidviewer.network.MovieDatabaseQueryType;
 import com.mattniehoff.tmdbandroidviewer.network.MoviesDatabaseClient;
+import com.mattniehoff.tmdbandroidviewer.viewmodel.MainViewModel;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -30,11 +36,15 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class MainActivity extends AppCompatActivity
         implements MovieAdapter.ListItemClickListener {
 
+    public static final int MOVIE_ACTIVITY_REQUEST_CODE = 1;
+
     private RecyclerView recyclerView;
     private MovieAdapter adapter;
     private RecyclerView.LayoutManager layoutManager;
     private String[] testData;
-    private MovieDatabaseQueryType movieDatabaseQueryType;
+   // private MovieDatabaseQueryType movieDatabaseQueryType;
+
+    private MainViewModel mainViewModel;
 
     private static final String TMDB_API_KEY = BuildConfig.TMDB_API_KEY;
 
@@ -43,7 +53,18 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        movieDatabaseQueryType = MovieDatabaseQueryType.MOVIES_BY_POPULARITY;
+        // From https://codelabs.developers.google.com/codelabs/android-room-with-a-view/#13
+        mainViewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+        mainViewModel.getFavorites().observe(this, new Observer<List<TheMovieDatabaseMovieResult>>() {
+            @Override
+            public void onChanged(@Nullable List<TheMovieDatabaseMovieResult> theMovieDatabaseMovieResults) {
+                if (mainViewModel.getMovieDatabaseQueryType() == MovieDatabaseQueryType.MOVIES_FAVORITE) {
+                    refreshFavorites(theMovieDatabaseMovieResults);
+                }
+            }
+        });
+
+       // movieDatabaseQueryType = MovieDatabaseQueryType.MOVIES_BY_POPULARITY;
 
         recyclerView = (RecyclerView) findViewById(R.id.movies_recycler_view);
 
@@ -74,6 +95,9 @@ public class MainActivity extends AppCompatActivity
                 changeSort();
                 populateData();
                 return true;
+            case R.id.toggle_favorites:
+                changeSortToFavorites();
+                refreshFavorites(mainViewModel.getFavorites().getValue());
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -81,18 +105,33 @@ public class MainActivity extends AppCompatActivity
 
     private void changeSort() {
         String toastMessage = getString(R.string.change_sort_prefix);
-        if (movieDatabaseQueryType == MovieDatabaseQueryType.MOVIES_BY_POPULARITY) {
-            movieDatabaseQueryType = MovieDatabaseQueryType.MOVIES_BY_RATING;
+        if (mainViewModel.getMovieDatabaseQueryType() == MovieDatabaseQueryType.MOVIES_BY_POPULARITY) {
+            mainViewModel.setMovieDatabaseQueryType(MovieDatabaseQueryType.MOVIES_BY_RATING);
             toastMessage += getString(R.string.rating);
         } else {
-            movieDatabaseQueryType = MovieDatabaseQueryType.MOVIES_BY_POPULARITY;
+            mainViewModel.setMovieDatabaseQueryType(MovieDatabaseQueryType.MOVIES_BY_POPULARITY);
             toastMessage += getString(R.string.popularity);
         }
 
         Toast.makeText(this, toastMessage, Toast.LENGTH_LONG).show();
     }
 
+    private void changeSortToFavorites() {
+        if (mainViewModel.getMovieDatabaseQueryType() != MovieDatabaseQueryType.MOVIES_FAVORITE) {
+            mainViewModel.setMovieDatabaseQueryType(MovieDatabaseQueryType.MOVIES_FAVORITE);
+        } else {
+            changeSort();
+            populateData();
+        }
+    }
+
     private void populateData() {
+        if (mainViewModel.getMovieDatabaseQueryType() == MovieDatabaseQueryType.MOVIES_FAVORITE) {
+            refreshFavorites(mainViewModel.getFavorites().getValue());
+            return;
+        }
+
+
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(MovieDatabaseNetworkUtils.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -101,7 +140,7 @@ public class MainActivity extends AppCompatActivity
         MoviesDatabaseClient client = retrofit.create(MoviesDatabaseClient.class);
         Call<TheMovieDatabaseResponse> call;
 
-        switch (movieDatabaseQueryType) {
+        switch (mainViewModel.getMovieDatabaseQueryType()) {
 
             case MOVIES_BY_POPULARITY:
                 call = client.moviesByPopularity(TMDB_API_KEY);
@@ -110,7 +149,7 @@ public class MainActivity extends AppCompatActivity
                 call = client.moviesByRating(TMDB_API_KEY);
                 break;
             default:
-                Toast.makeText(this, getString(R.string.error_invalid_movie_database_query_type) + movieDatabaseQueryType, Toast.LENGTH_LONG);
+                Toast.makeText(this, getString(R.string.error_invalid_movie_database_query_type) + mainViewModel.getMovieDatabaseQueryType(), Toast.LENGTH_LONG);
                 return;
         }
 
@@ -131,6 +170,12 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
+    private void refreshFavorites(List<TheMovieDatabaseMovieResult> theMovieDatabaseMovieResults) {
+        if (mainViewModel.getMovieDatabaseQueryType() == MovieDatabaseQueryType.MOVIES_FAVORITE) {
+            adapter.updateData(theMovieDatabaseMovieResults);
+        }
+    }
+
     private void showFailureMessage() {
         Toast.makeText(this, R.string.failure_message, Toast.LENGTH_LONG).show();
     }
@@ -138,7 +183,28 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onListItemClick(TheMovieDatabaseMovieResult movieTheMovieDatabaseMovieResult) {
         Intent intent = new Intent(this, MovieActivity.class);
-        intent.putExtra(MovieActivity.RESULT_EXTRA, movieTheMovieDatabaseMovieResult);
-        startActivity(intent);
+        intent.putExtra(MovieActivity.MOVIE_EXTRA, movieTheMovieDatabaseMovieResult);
+        intent.putExtra(MovieActivity.IS_FAVORITE_EXTRA, checkIfMovieFavorited(movieTheMovieDatabaseMovieResult.getId()));
+        startActivityForResult(intent, MOVIE_ACTIVITY_REQUEST_CODE);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == MOVIE_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK) {
+            TheMovieDatabaseMovieResult movie = data.getParcelableExtra(MovieActivity.MOVIE_EXTRA);
+            boolean isFavorite = data.getBooleanExtra(MovieActivity.IS_FAVORITE_EXTRA, false);
+            if (isFavorite) {
+                mainViewModel.insert(movie);
+            } else {
+                mainViewModel.delete(movie);
+            }
+        }
+    }
+
+    private boolean checkIfMovieFavorited(int movieId) {
+        return TheMovieDatabaseMovieResultUtils
+                .containsMovieId(mainViewModel.getFavorites().getValue(), movieId);
     }
 }
